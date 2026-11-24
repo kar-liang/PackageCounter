@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct ContentView: View {
+struct CounterView: View {
     @EnvironmentObject private var store: Store
     @State private var showingSettings = false
 
@@ -253,6 +253,23 @@ struct SettingsView: View {
                     }
                 }
             }
+        }
+    }
+}
+
+// MARK: - Root (tabs)
+
+struct ContentView: View {
+    var body: some View {
+        TabView {
+            CounterView()
+                .tabItem {
+                    Label("计数", systemImage: "number.square")
+                }
+            EventsView()
+                .tabItem {
+                    Label("活动日历", systemImage: "calendar")
+                }
         }
     }
 }
