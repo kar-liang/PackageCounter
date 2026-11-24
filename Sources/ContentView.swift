@@ -22,7 +22,7 @@ struct CounterView: View {
                 }
                 .padding()
             }
-            .navigationTitle("建材套餐计数")
+            .navigationTitle("HayDay 助手")
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
