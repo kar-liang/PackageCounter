@@ -1,0 +1,29 @@
+name: PackageCounter
+options:
+  bundleIdPrefix: com.karliang
+  deploymentTarget:
+    iOS: "17.0"
+settings:
+  base:
+    MARKETING_VERSION: "1.0"
+    CURRENT_PROJECT_VERSION: "1"
+    CODE_SIGNING_ALLOWED: NO
+    CODE_SIGNING_REQUIRED: NO
+    GENERATE_INFOPLIST_FILE: YES
+targets:
+  PackageCounter:
+    type: application
+    platform: iOS
+    sources:
+      - path: Sources
+      - path: Assets.xcassets
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.karliang.packagecounter
+        INFOPLIST_KEY_CFBundleDisplayName: 建材套餐计数
+        INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
+        INFOPLIST_KEY_UILaunchStoryboardName: ""
+        INFOPLIST_KEY_UISupportedInterfaceOrientations: UIInterfaceOrientationPortrait
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        TARGETED_DEVICE_FAMILY: "1,2"
+        SWIFT_VERSION: "5.0"
