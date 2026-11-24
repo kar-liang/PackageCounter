@@ -117,8 +117,8 @@ struct CounterView: View {
         )
     }
 
-    /// Hours part of the interval (0...12). Changing it keeps the minutes
-    /// part; the manager clamps the total to 1...720 minutes.
+    /// Hours part of the interval (0...2). Changing it keeps the minutes
+    /// part; the manager clamps the total to 1...120 minutes.
     private var tomHoursBinding: Binding<Int> {
         Binding(
             get: { tomReminder.intervalMinutes / 60 },
@@ -128,8 +128,8 @@ struct CounterView: View {
         )
     }
 
-    /// Minutes part of the interval (0...59, forced to 0 at 12 hours so
-    /// the total can never exceed the 720-minute cap). If the user dials
+    /// Minutes part of the interval (0...59, forced to 0 at 2 hours so
+    /// the total can never exceed the 120-minute cap). If the user dials
     /// both parts to 0, the manager clamps the total up to 1 minute.
     private var tomMinutesBinding: Binding<Int> {
         Binding(
@@ -144,11 +144,11 @@ struct CounterView: View {
         HStack(spacing: 12) {
             Text("间隔")
                 .font(.subheadline)
-            Stepper("\(tomReminder.intervalMinutes / 60) 小时", value: tomHoursBinding, in: 0...12)
+            Stepper("\(tomReminder.intervalMinutes / 60) 小时", value: tomHoursBinding, in: 0...2)
             Stepper(
                 "\(tomReminder.intervalMinutes % 60) 分",
                 value: tomMinutesBinding,
-                in: 0...(tomReminder.intervalMinutes / 60 >= 12 ? 0 : 59)
+                in: 0...(tomReminder.intervalMinutes / 60 >= 2 ? 0 : 59)
             )
         }
         .font(.subheadline)

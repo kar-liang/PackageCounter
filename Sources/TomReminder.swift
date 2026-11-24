@@ -16,7 +16,7 @@ final class TomReminderManager: ObservableObject {
     /// minimum UNTimeIntervalNotificationTrigger accepts (60 seconds)
     /// for a repeating trigger, so nothing below 1 minute is allowed.
     static let minIntervalMinutes = 1
-    static let maxIntervalMinutes = 720
+    static let maxIntervalMinutes = 120
     static let notificationIdentifier = "tom.reminder.repeating"
 
     private let enabledKey = "packageCounter.tomReminder.enabled"
@@ -85,7 +85,7 @@ final class TomReminderManager: ObservableObject {
 
     // MARK: - Interval
 
-    /// Changes the reminder interval (minutes, clamped to 1...720) and
+    /// Changes the reminder interval (minutes, clamped to 1...120) and
     /// persists it. If the reminder is currently on, the pending request
     /// is replaced (schedule() removes it first) and the countdown
     /// restarts from now with the new interval.
