@@ -1,4 +1,4 @@
-# 建材套餐计数（PackageCounter）
+# HayDay 助手（PackageCounter）
 
 记录 Hay Day 货仓建材套餐每天发货次数的小工具：多账号、30 天格子日历、今日已发货 / 撤销、套餐设置，数据保存在手机本地。
 
