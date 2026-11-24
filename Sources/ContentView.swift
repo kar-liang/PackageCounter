@@ -77,6 +77,8 @@ struct CounterView: View {
                 }
                 .buttonStyle(.plain)
             }
+            .padding(6)
+            .glassEffect(.regular, in: Capsule())
         }
     }
 
@@ -98,7 +100,7 @@ struct CounterView: View {
         }
         .frame(maxWidth: .infinity)
         .padding()
-        .background(RoundedRectangle(cornerRadius: 12).fill(Color.secondary.opacity(0.08)))
+        .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 20))
     }
 
     // MARK: - Actions
@@ -126,7 +128,7 @@ struct CounterView: View {
                     Text("今日已发货")
                         .frame(maxWidth: .infinity)
                 }
-                .buttonStyle(.borderedProminent)
+                .buttonStyle(.glassProminent)
                 .disabled(!state.enabled)
 
                 Button {
@@ -135,7 +137,7 @@ struct CounterView: View {
                     Text("撤销上一次")
                         .frame(maxWidth: .infinity)
                 }
-                .buttonStyle(.bordered)
+                .buttonStyle(.glass)
                 .disabled(account.shippedCount == 0)
             }
             if !state.hint.isEmpty {
@@ -170,10 +172,7 @@ struct CounterView: View {
                                 }
                                 .frame(maxWidth: .infinity)
                                 .padding(.vertical, 6)
-                                .background(
-                                    RoundedRectangle(cornerRadius: 8)
-                                        .fill(shipped ? Color.green.opacity(0.75) : Color.secondary.opacity(0.12))
-                                )
+                                .modifier(GridCellBackground(shipped: shipped))
                                 .overlay(
                                     RoundedRectangle(cornerRadius: 8)
                                         .stroke(isToday ? Color.accentColor : Color.clear, lineWidth: 2)
@@ -196,6 +195,26 @@ struct CounterView: View {
 
     static let dateFormat = Date.FormatStyle(date: .long, time: .omitted)
     static let monthFormat = Date.FormatStyle().month(.abbreviated)
+}
+
+/// Background for one day cell in the 30-day grid: shipped days get a
+/// green-tinted Liquid Glass tile, other days stay a plain subtle fill.
+private struct GridCellBackground: ViewModifier {
+    let shipped: Bool
+
+    func body(content: Content) -> some View {
+        if shipped {
+            content.glassEffect(
+                .regular.tint(.green.opacity(0.35)),
+                in: RoundedRectangle(cornerRadius: 8)
+            )
+        } else {
+            content.background(
+                RoundedRectangle(cornerRadius: 8)
+                    .fill(Color.secondary.opacity(0.12))
+            )
+        }
+    }
 }
 
 // MARK: - Settings

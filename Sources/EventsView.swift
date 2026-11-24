@@ -50,16 +50,18 @@ struct EventsView: View {
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(alignment: .leading, spacing: 16) {
-                    header
-                    daysList
-                    derbyCard
-                    ongoingCard
-                    Text("数据更新于 \(week.updatedAt)")
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
+                GlassEffectContainer(spacing: 16) {
+                    VStack(alignment: .leading, spacing: 16) {
+                        header
+                        daysList
+                        derbyCard
+                        ongoingCard
+                        Text("数据更新于 \(week.updatedAt)")
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                    }
+                    .padding()
                 }
-                .padding()
             }
             .navigationTitle("活动日历")
             .task {
@@ -91,6 +93,7 @@ struct EventsView: View {
     private func dayRow(_ day: EventDay) -> some View {
         let isToday = day.date == Day.key(for: Date())
         let expanded = expandedDate == day.date
+        let cardGlass: Glass = isToday ? .regular.tint(.blue.opacity(0.25)) : .regular
         return VStack(alignment: .leading, spacing: 6) {
             Button {
                 expandedDate = expanded ? nil : day.date
@@ -129,12 +132,9 @@ struct EventsView: View {
             }
         }
         .padding()
-        .background(
-            RoundedRectangle(cornerRadius: 12)
-                .fill(isToday ? Color.accentColor.opacity(0.12) : Color.secondary.opacity(0.08))
-        )
+        .glassEffect(cardGlass, in: RoundedRectangle(cornerRadius: 16))
         .overlay(
-            RoundedRectangle(cornerRadius: 12)
+            RoundedRectangle(cornerRadius: 16)
                 .stroke(isToday ? Color.accentColor : Color.clear, lineWidth: 1.5)
         )
     }
@@ -148,7 +148,7 @@ struct EventsView: View {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding()
-        .background(RoundedRectangle(cornerRadius: 12).fill(Color.secondary.opacity(0.08)))
+        .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 16))
     }
 
     private var ongoingCard: some View {
@@ -174,7 +174,7 @@ struct EventsView: View {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding()
-        .background(RoundedRectangle(cornerRadius: 12).fill(Color.secondary.opacity(0.08)))
+        .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 16))
     }
 
     // MARK: - Remote refresh
