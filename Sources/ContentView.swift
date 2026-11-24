@@ -2,6 +2,7 @@ import SwiftUI
 
 struct CounterView: View {
     @EnvironmentObject private var store: Store
+    @StateObject private var tomReminder = TomReminderManager()
     @State private var showingSettings = false
 
     private let columns = Array(repeating: GridItem(.flexible(), spacing: 6), count: 7)
@@ -13,6 +14,7 @@ struct CounterView: View {
                     accountSwitcher
                     if let account = store.selectedAccount {
                         progressCard(account)
+                        tomReminderCard
                         actionButtons(account)
                         gridCard(account)
                     } else {
@@ -38,6 +40,9 @@ struct CounterView: View {
                     SettingsView(account: account)
                         .environmentObject(store)
                 }
+            }
+            .task {
+                await tomReminder.refreshPermissionState()
             }
         }
     }
@@ -99,6 +104,91 @@ struct CounterView: View {
             }
         }
         .frame(maxWidth: .infinity)
+        .padding()
+        .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 20))
+    }
+
+    // MARK: - Tom reminder
+
+    private var tomToggleBinding: Binding<Bool> {
+        Binding(
+            get: { tomReminder.isEnabled },
+            set: { tomReminder.setEnabled($0) }
+        )
+    }
+
+    /// Hours part of the interval (0...12). Changing it keeps the minutes
+    /// part; the manager clamps the total to 1...720 minutes.
+    private var tomHoursBinding: Binding<Int> {
+        Binding(
+            get: { tomReminder.intervalMinutes / 60 },
+            set: { newHours in
+                tomReminder.setIntervalMinutes(newHours * 60 + tomReminder.intervalMinutes % 60)
+            }
+        )
+    }
+
+    /// Minutes part of the interval (0...59, forced to 0 at 12 hours so
+    /// the total can never exceed the 720-minute cap). If the user dials
+    /// both parts to 0, the manager clamps the total up to 1 minute.
+    private var tomMinutesBinding: Binding<Int> {
+        Binding(
+            get: { tomReminder.intervalMinutes % 60 },
+            set: { newMinutes in
+                tomReminder.setIntervalMinutes(tomReminder.intervalMinutes / 60 * 60 + newMinutes)
+            }
+        )
+    }
+
+    private var tomIntervalRow: some View {
+        HStack(spacing: 12) {
+            Text("间隔")
+                .font(.subheadline)
+            Stepper("\(tomReminder.intervalMinutes / 60) 小时", value: tomHoursBinding, in: 0...12)
+            Stepper(
+                "\(tomReminder.intervalMinutes % 60) 分",
+                value: tomMinutesBinding,
+                in: 0...(tomReminder.intervalMinutes / 60 >= 12 ? 0 : 59)
+            )
+        }
+        .font(.subheadline)
+    }
+
+    private var tomReminderCard: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack(spacing: 8) {
+                Image(systemName: "pawprint.fill")
+                Text("汤姆提醒")
+                    .font(.headline)
+                Spacer()
+                Toggle("汤姆提醒", isOn: tomToggleBinding)
+                    .labelsHidden()
+            }
+            tomIntervalRow
+            if tomReminder.isEnabled {
+                TimelineView(.periodic(from: .now, by: 30)) { context in
+                    if let next = tomReminder.nextFireDate(from: context.date) {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("下一次提醒：\(next, format: Self.timeFormat)")
+                            if let remaining = tomReminder.remainingDescription(from: context.date) {
+                                Text(remaining)
+                                    .foregroundStyle(.secondary)
+                            }
+                        }
+                        .font(.subheadline)
+                    }
+                }
+            } else if tomReminder.permissionDenied {
+                Text("通知权限被拒绝了。去「设置 › 通知 › HayDay 助手」里打开通知后，再开启这个开关。")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+            } else {
+                Text("开启后，每 \(TomReminderManager.durationText(minutes: tomReminder.intervalMinutes))提醒你汤姆可以再去买食材")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
         .padding()
         .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 20))
     }
@@ -195,6 +285,7 @@ struct CounterView: View {
 
     static let dateFormat = Date.FormatStyle(date: .long, time: .omitted)
     static let monthFormat = Date.FormatStyle().month(.abbreviated)
+    static let timeFormat = Date.FormatStyle(date: .omitted, time: .shortened)
 }
 
 /// Background for one day cell in the 30-day grid: shipped days get a
