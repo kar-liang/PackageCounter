@@ -24,9 +24,9 @@ enum EventsData {
         ],
         derby: "休闲兔子德比（周二 16:00 至下周一 16:00）",
         ongoing: [
-            OngoingEvent(name: "Tiny Sail", dates: "11月21日–24日"),
-            OngoingEvent(name: "Design Festival", dates: "11月18日–30日"),
-            OngoingEvent(name: "Neighbourhood Nurture Event", dates: "11月9日–12月30日"),
+            OngoingEvent(name: "小船远航", dates: "11月21日–24日"),
+            OngoingEvent(name: "设计节", dates: "11月18日–30日"),
+            OngoingEvent(name: "社区共育活动", dates: "11月9日–12月30日"),
         ],
         updatedAt: "2026-11-23"
     )
